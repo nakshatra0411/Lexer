@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "utils.h"
 #include "TokenType.h"
 #include "lang.h"
@@ -20,7 +21,7 @@ public:
 class Scanner {
 	std::string source;
 	std::vector<Token> tokens;
-	lang* caller;
+	lang *caller;
 	static const std::unordered_map<std::string, TokenType> keywords;
 	int start;
 	int current;

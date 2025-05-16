@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lang.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Scanner.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>

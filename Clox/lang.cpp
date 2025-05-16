@@ -1,4 +1,7 @@
-#include <bits/stdc++.h>
+#include <string>
+#include <stdexcept>
+#include <iostream>
+#include <fstream>
 #include "Scanner.h"
 
 std::string lang::readFile(const std::string& path) {
@@ -17,7 +20,6 @@ void lang::Run(std::string& source) {
 	Scanner* scanner = new Scanner(source,this);
 	std::vector<Token> tokens = scanner->ScanTokens();
 
-	//for now we just print tokens
 	for (auto& tok : tokens) {
 		std::cout << tok.toString() << std::endl;
 	}
@@ -71,8 +73,3 @@ void lang::Report(int line, const char* message) {
 
 
 
-int main(int argc, char* argv[]) {
-	lang Lang;
-	Lang.init(argc,argv);
-	return EXIT_SUCCESS;
-}

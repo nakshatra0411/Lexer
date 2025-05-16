@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include "Scanner.h"
 
 class lang {
 	bool hadError = false;
