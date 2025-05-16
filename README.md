@@ -57,7 +57,7 @@ This lexer is the foundational step towards building a **complete compiler** for
 
 ### Building
 
-Use your preferred C++17 compiler to compile the source files:
+Use your preferred C++20 compiler to compile the source files:
 
 ```bash
-g++ -std=c++17 -o lang main.cpp lang.cpp Scanner.cpp utils.cpp
+g++ -std=c++20 -o lang main.cpp lang.cpp Scanner.cpp utils.cpp
