@@ -12,7 +12,7 @@ std::string lang::readFile(const std::string& path) {
 		(std::istreambuf_iterator<char>(file)),
 		std::istreambuf_iterator<char>()
 	);
-	return std::move(content);
+	return content;
 }
 
 void lang::Run(std::string& source) {
