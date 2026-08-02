@@ -3,6 +3,9 @@
 #include <iostream>
 #include <fstream>
 #include "Scanner.h"
+#include "Parser.h"
+#include "Interpreter.h"
+#include "Resolver.h"
 
 std::string lang::readFile(const std::string& path) {
 	std::ifstream file(path, std::ios::binary);
@@ -20,9 +23,21 @@ void lang::Run(std::string& source) {
 	Scanner* scanner = new Scanner(source,this);
 	std::vector<Token> tokens = scanner->ScanTokens();
 
-	for (auto& tok : tokens) {
-		std::cout << tok.toString() << std::endl;
-	}
+	Parser parser(tokens, this);
+	auto statements = parser.parse();
+
+	if (statements.empty()) return;
+
+	Interpreter interpreter(this);
+	if (hadError) return;
+
+	Resolver resolver(&interpreter);
+	resolver.resolve(statements);
+
+	if (hadError) return;
+	interpreter.interpret(statements);
+
+	delete scanner;
 }
 
 
@@ -56,7 +71,7 @@ void lang::RunFile(const char* path) {
 
 void lang::RunPrompt() {
 	for (;;) {
-		std::cout << "> ";
+		std::cout << "> " << std::flush;
 		std::string line; 
 		std::getline(std::cin, line);
 		if (line.empty()) break;

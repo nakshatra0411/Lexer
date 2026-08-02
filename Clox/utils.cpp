@@ -51,10 +51,30 @@ std::string TokenTypeToString(TokenType type) {
 std::string LiteralToString(const Literal& lit) {
     return std::visit([](auto&& val) -> std::string {
         using T = std::decay_t<decltype(val)>;
-        if constexpr (std::is_same_v<T, std::monostate>) return "nil";
-        else if constexpr (std::is_same_v<T, std::string>) return "\"" + val + "\"";
-        else if constexpr (std::is_same_v<T, bool>) return val ? "true" : "false";
-        else return std::to_string(val);
+
+        if constexpr (std::is_same_v<T, std::monostate>) {
+            return "nil";
+        }
+        else if constexpr (std::is_same_v<T, std::string>) {
+            return "\"" + val + "\"";
+        }
+        else if constexpr (std::is_same_v<T, bool>) {
+            return val ? "true" : "false";
+        }
+        else if constexpr (std::is_same_v<T, Callable>) {
+            // Unpack the inner Callable variant
+            if (std::holds_alternative<std::shared_ptr<NativeFunction>>(val)) {
+                return "<native fn>";
+            }
+            if (std::holds_alternative<std::shared_ptr<LoxFunction>>(val)) {
+                return "<fn>";
+            }
+            return "unknown callable";
+        }
+        else {
+            // This safely catches double (and any future numeric types)
+            return std::to_string(val);
+        }
         }, lit);
 }
 
