@@ -1,63 +1,85 @@
 # Clox
-# Simple Scripting Language Lexer (Scanner)
 
-This project implements a **lexer/scanner** component for a custom scripting language interpreter. The lexer reads source code input and converts it into a sequence of tokens, which are the basic syntactic units used for further parsing and interpretation.
+A high-performance, feature-complete procedural **Lox interpreter** written in modern C++20/23, based on the architecture described in *Crafting Interpreters* by Robert Nystrom. 
 
 ---
 
-## About the Language: Lox
+## About Lox
 
-This lexer is designed to scan source code written in a simple interpreted scripting language called **Lox**, introduced in the book *Crafting Interpreters* by Robert Nystrom.
+Lox is a clean, dynamically typed scripting language designed for educational interpreters. This implementation focuses on the procedural core of the language, utilizing modern C++ design patterns to bypass traditional interpreter overhead.
 
-### Key Characteristics of Lox
+### Key Characteristics
 
-- **Dynamically typed**: Variables do not require type annotations.
-- **Interpreted**: Lox code is executed directly without compiling to machine code.
-- **Imperative**: Supports variables, control flow (e.g., `if`, `while`, `for`), functions, and classes.
-- **Object-oriented**: Includes basic class and inheritance mechanisms.
-- **Syntactically simple**: The grammar and syntax are minimalistic and clean.
+- **Dynamically typed variables**: Store numbers, strings, booleans, and callables seamlessly via `std::variant`.
+- **Procedural Core & Control Flow**: Full support for blocks, conditionals (`if`/`else`), loops (`while`), and functions with explicit or implicit returns.
+- **Lexically Scoped**: Static scoping enforced via an ahead-of-time semantic analysis pass.
+- **First-Class Functions & Closures**: Functions capture their defining environment, allowing for full state retention and closures.
 
-### Grammar Type and Implications
+---
 
-- **Regular Grammar (for Lexical Analysis)**  
-  The part of the language handled by the lexer (identifiers, keywords, literals, operators, etc.) can be described by **regular grammar**, which means it can be recognized by a finite state machine.  
-  This allows the use of efficient scanning techniques without the need for recursive parsing.
+## Architecture & Technical Highlights
 
-- **Context-Free Grammar (for Parsing)**  
-  Although the **lexer** works with regular grammar, the full **Lox language grammar** is context-free, which is required for constructs like nested expressions and matching parentheses.  
-  The current project only implements the lexer, but it's built with future parser integration in mind.
+This project moves away from traditional slow, pointer-heavy OOP interpreter designs, leveraging C++ features for speed, safety, and modern idioms:
 
-## Features
+- **Variant-Based AST Dispatch (`std::visit`)**: Eliminates virtual function table overhead by using `std::visit` paired with the modern `overloaded` pattern for fast, type-safe execution and static analysis.
+- **Static Scope Resolution (`Resolver`)**: An ahead-of-time tree-walking semantic analyzer that maps every variable reference to its exact environment "distance" up the scope chain.
+- **Cache-Optimized Scopes (`std::flat_map`)**: Local blocks utilize C++23's `std::flat_map` instead of `std::unordered_map`, ensuring contiguous memory layout and superior cache locality for small symbol tables.
+- **Environment Chain & Stack Unwinding**: Environments are managed via smart pointer trees (`std::shared_ptr<Environment>`), and function return mechanics are handled via clean exception-based stack unwinding (`ReturnException`).
+- **Native Bindings**: Built-in runtime extensions (such as high-resolution benchmarking via `clock()`) injected cleanly into the global scope.
 
-- Tokenizes source code into meaningful tokens such as identifiers, keywords, literals (strings, numbers, booleans), and symbols.
-- Supports multi-character operators and comments.
-- Handles string literals with proper error reporting on unterminated strings.
-- Supports keywords such as `if`, `else`, `for`, `while`, `true`, `false`, etc.
-- Includes basic error reporting for unexpected characters.
-- Uses modern C++17 features like `std::variant` for token literal representation.
+---
+
+## Compilation Pipeline
+
+Source code flows through a rigorous, multi-stage compilation and execution pipeline:
+
+```text
+Source Code -> Scanner (Tokens) -> Parser (AST) -> Resolver (Semantic Distance) -> Interpreter (Execution)
+
+```
 
 ---
 
 ## Components
 
-- **`lang`**: Main language runner class that reads source files or runs an interactive prompt, and triggers scanning.
-- **`Scanner`**: Core lexer class that processes input source code and produces tokens.
-- **`Token`**: Represents individual tokens with type, lexeme, literal value, and line number.
-- **`TokenType`**: Enum listing all possible token types.
-- **`utils`**: Utility functions for token type to string conversions, character classification, and literal to string formatting.
+* **`lang`**: The core driver coordinating source file reading, error reporting, and the execution pipeline.
+* **`Scanner`**: Tokenizes raw source files into tokens, handling keywords, literals, and comments.
+* **`Parser`**: A recursive-descent parser constructing a structured Abstract Syntax Tree (AST).
+* **`Resolver`**: Performs static analysis to compute lexical variable depths and guard against initialization errors.
+* **`Interpreter`**: Evaluates AST nodes, manages scopes, handles native calls, and executes block execution chains.
+* **`Environment`**: Manages variable bindings and distance-based (`getAt`/`assignAt`) lookups.
 
 ---
 
-**Future plans:**  
-This lexer is the foundational step towards building a **complete compiler** for the language, including parsing, semantic analysis, and code generation.
+## Building and Usage
 
----
+### Requirements
 
-## Usage
+* A modern C++ compiler supporting **C++23** .
 
-### Building
+### Compilation (Example using MSVC / Clang / GCC)
 
-Use your preferred C++20 compiler to compile the source files:
+Compile all source files together specifying the modern standard:
 
 ```bash
-g++ -std=c++20 -o lang main.cpp lang.cpp Scanner.cpp utils.cpp
+g++ -std=c++23 main.cpp lang.cpp Scanner.cpp Parser.cpp Resolver.cpp Interpreter.cpp utils.cpp -o Clox
+
+```
+
+### Running a Script
+
+Execute any `.lox` source file directly through the binary:
+
+```bash
+./Clox script.lox
+
+```
+
+---
+
+## Future Scope (Planned Enhancements)
+
+* Object-Oriented Programming support (Classes, instances, fields, methods, and inheritance via `this` and `super`) as a self-directed architectural challenge.
+```
+
+```
