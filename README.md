@@ -79,7 +79,7 @@ Execute any `.lox` source file directly through the binary:
 
 ## Future Scope (Planned Enhancements)
 
-* Object-Oriented Programming support (Classes, instances, fields, methods, and inheritance via `this` and `super`) as a self-directed architectural challenge.
+* Object-Oriented Programming support (Classes, instances, fields, methods, and inheritance via `this` and `super`).
 ```
 
 ```
